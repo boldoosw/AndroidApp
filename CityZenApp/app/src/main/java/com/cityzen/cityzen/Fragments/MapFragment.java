@@ -69,6 +69,7 @@ public class MapFragment extends Fragment implements MapEventsReceiver {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_map, container, false);
+
     }
 
 

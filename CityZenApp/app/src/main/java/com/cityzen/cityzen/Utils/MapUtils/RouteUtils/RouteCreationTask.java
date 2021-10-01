@@ -68,7 +68,7 @@ public class RouteCreationTask extends AsyncTask<Void, Void, Void> {
     }
 
     private void getRoadBetweenLocations() {
-        RoadManager roadManager = new OSRMRoadManager(context);
+        RoadManager roadManager = new OSRMRoadManager(context, "OBP_Tuto/1.0");
         ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
         waypoints.add(new GeoPoint(fromLatitude, fromLongitude));
         GeoPoint endPoint = new GeoPoint(toLatitude, toLongitude);

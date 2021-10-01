@@ -1,6 +1,7 @@
 package com.cityzen.cityzen.Activities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,6 +24,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cityzen.cityzen.Fragments.CategoriesFragment;
 import com.cityzen.cityzen.Fragments.EditPoiFragment;
@@ -64,6 +66,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
 import de.westnordost.osmapi.OsmConnection;
 import info.metadude.java.library.overpass.models.Element;
 import oauth.signpost.OAuthConsumer;
@@ -72,7 +75,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity
         implements OAuthWebViewDialogFragment.OAuthListener,
-        OAuthComponent.Listener, EasyPermissions.PermissionCallbacks {
+        OAuthComponent.Listener, EasyPermissions.PermissionCallbacks, LocationListener {
 
     public static final String CHARSET = "UTF-8";
     private static final int DEFAULT_TIMEOUT = 45 * 1000;
@@ -121,7 +124,7 @@ public class MainActivity extends AppCompatActivity
         getStatusBatColor();
         updateStatusBarColor();
         viewSetup();
-
+        getLocation();
         setupOsmConnection();
 
 //        AppLog.log("OAUTH");
@@ -418,64 +421,17 @@ public class MainActivity extends AppCompatActivity
     /**
      * Get device location, needed form map functionality, category filter, and search POIs
      */
+    @SuppressLint("MissingPermission")
     private void getDeviceLocation() {
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+
+        try {
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        //get initial location state
-//        if (getLastKnownLocation() == null) {
-        Location initialLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if (initialLocation != null) {
-            saveLastKnownLocation(initialLocation);
-            notifyMapLocationChanged();
-        }
-//        }
-
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                if (DeviceUtils.isGPSEnabled(MainActivity.this)) {
-                    if (locationManager != null) {
-                        if (ActivityCompat.checkSelfPermission(MainActivity.this,
-                                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED /*&&
-                                ActivityCompat.checkSelfPermission(MainActivity.this,
-                                        android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED*/) {
-                            return;
-                        }
-                        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                        if (location != null) {
-                            saveLastKnownLocation(location);
-                            notifyMapLocationChanged();
-                        }
-                    }
-                } else if (DeviceUtils.isInternetConnected(MainActivity.this)) {
-                    if (locationManager != null) {
-                        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                        if (location != null) {
-                            saveLastKnownLocation(location);
-                            notifyMapLocationChanged();
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-            }
-
-            @Override
-            public void onProviderEnabled(String s) {
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-            }
-        };
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
 
 
@@ -864,5 +820,51 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+
+
+
 /**********************************************End of Activity***********************************************/
+/**********************************************Location Device New***********************************************/
+@SuppressLint("MissingPermission")
+private void getLocation() {
+
+    try {
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0, 0, this);
+
+    }catch (Exception e){
+        e.printStackTrace();
+    }
+
+}
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Toast.makeText(this, " my Location is:"+location.getLatitude()+","+location.getLongitude(), Toast.LENGTH_SHORT).show();
+        try {
+            Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
+            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(),location.getLongitude(),1);
+            String address = addresses.get(0).getAddressLine(0);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
 }

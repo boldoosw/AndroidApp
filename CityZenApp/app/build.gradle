@@ -7,11 +7,11 @@ repositories {
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 31
     defaultConfig {
         applicationId "com.cityzen.cityzen"
         minSdkVersion 16
-        targetSdkVersion 28
+        targetSdkVersion 31
         versionName "1.2.1"
         versionCode 10200199
 
@@ -48,13 +48,15 @@ dependencies {
     }
     implementation 'info.metadude.java.library.overpass:overpass-library:2.0.0'
     implementation 'oauth.signpost:signpost-core:1.2.1.2'
-    implementation 'org.osmdroid:osmdroid-android:6.1.0'
-    implementation 'com.github.MKergall:osmbonuspack:6.6.0'
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'org.osmdroid:osmdroid-android:6.1.11'
+    implementation 'org.apache.commons:commons-lang3:3.8.1'
+    implementation 'com.github.MKergall:osmbonuspack:6.8.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.github.clans:fab:1.6.4'
     implementation 'com.github.ittianyu:BottomNavigationViewEx:2.0.2'
     implementation 'pub.devrel:easypermissions:3.0.0'
     implementation 'io.github.rockerhieu:emojicon:1.4.2'
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.7.2'
     testImplementation 'junit:junit:4.12'
 }
